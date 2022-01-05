@@ -1,0 +1,9 @@
+[package]
+name = "rust-tdf"
+version = "0.1.0"
+authors = ["Marcos Alfredo Núñez <mnunez@fleni.org.ar>"]
+edition = "2021"
+
+[dependencies]
+deku = "0.12.5"
+chrono = "0.4.19"
