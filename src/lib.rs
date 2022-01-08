@@ -47,7 +47,8 @@ pub struct TdfHeaderInfo {
 #[derive(Debug, DekuRead, DekuWrite)]
 pub struct TdfJumptableEntry {
     block_type: TdfBlockType,
-    format: u32,
+    #[deku(ctx = "*block_type")]
+    format: TdfFormat,
     offset: i32,
     size: i32,
     creation_date: TimeT,
@@ -62,7 +63,8 @@ pub struct TdfHeader {
     #[deku(count = "header.n_entries")]
     entries: Vec<TdfJumptableEntry>,
 }
-#[derive(Debug, DekuRead, DekuWrite)]
+
+#[derive(Debug, DekuRead, DekuWrite, Copy, Clone)]
 #[deku(type = "u32")]
 enum TdfBlockType {
     #[deku(id = "0")]
@@ -99,4 +101,171 @@ enum TdfBlockType {
     GeneralCalibrationData,
     #[deku(id = "16")]
     TemporalEventsData,
+}
+
+#[derive(Debug, DekuRead, DekuWrite)]
+#[deku(ctx = "block_type: TdfBlockType", id = "block_type")]
+enum TdfFormat {
+    #[deku(id = "TdfBlockType::CalibrationData")]
+    TdfCalibFormat(u32),
+    #[deku(id = "TdfBlockType::Data2d")]
+    TdfData2DFormat(u32),
+    #[deku(id = "TdfBlockType::Data3d")]
+    TdfData3DFormat(u32),
+    #[deku(id = "TdfBlockType::ForcePlatformsCalibrationData")]
+    TdfForcePlatformsCalibFormat(u32),
+    #[deku(id = "TdfBlockType::OpticalSystemConfiguration")]
+    TdfOptiSetupFormat(u32),
+    #[deku(id = "TdfBlockType::UnusedSlot")]
+    UnusedSlotFormat(u32),
+    #[deku(id = "TdfBlockType::ForcePlatformsData")]
+    TdfDataPlatFormat(u32),
+    #[deku(id = "TdfBlockType::ForceAndTorqueData")]
+    TdfForce3DFormat(u32),
+    #[deku(id = "TdfBlockType::TemporalEventsData")]
+    TdfEventsFormat(u32),
+}
+#[derive(Debug, DekuRead, DekuWrite)]
+#[deku(type = "u32")]
+enum TdfCalibFormat {
+    #[deku(id = "0")]
+    Unknown,
+    #[deku(id = "1")]
+    SeeLab1,
+    #[deku(id = "2")]
+    BTSCalibration,
+}
+
+#[derive(Debug, DekuRead, DekuWrite)]
+#[deku(type = "u32")]
+enum TdfData2DFormat {
+    #[deku(id = "0")]
+    Unknown,
+    #[deku(id = "1")]
+    RTS,
+    #[deku(id = "2")]
+    PCK,
+    #[deku(id = "3")]
+    SYNC,
+}
+#[derive(Debug, DekuRead, DekuWrite)]
+#[deku(type = "u32")]
+enum TdfData2D4P {
+    #[deku(id = "0")]
+    Unknown,
+    #[deku(id = "1")]
+    RTS,
+    #[deku(id = "2")]
+    PCK,
+    #[deku(id = "3")]
+    SYNC,
+}
+
+#[derive(Debug, DekuRead, DekuWrite)]
+#[deku(type = "u32")]
+enum TdfData2D4CFormat {
+    #[deku(id = "0")]
+    Unknown,
+    #[deku(id = "1")]
+    RTS,
+    #[deku(id = "2")]
+    PCK,
+    #[deku(id = "3")]
+    SYNC,
+}
+
+#[derive(Debug, DekuRead, DekuWrite)]
+#[deku(type = "u32")]
+enum TdfData3DFormat {
+    #[deku(id = "0")]
+    Unknown,
+    #[deku(id = "1")]
+    ByTrack,
+    #[deku(id = "2")]
+    ByTrackWithLinks,
+    #[deku(id = "3")]
+    ByFrame,
+    #[deku(id = "4")]
+    ByFrameWithLinks,
+}
+
+#[derive(Debug, DekuRead, DekuWrite)]
+#[deku(type = "u32")]
+enum TdfOptiSetupFormat {
+    #[deku(id = "0")]
+    Unknown,
+    #[deku(id = "1")]
+    BasicFormat,
+}
+
+#[derive(Debug, DekuRead, DekuWrite)]
+#[deku(type = "u32")]
+enum TdfCalPlatFormat {
+    #[deku(id = "0")]
+    Unknown,
+    #[deku(id = "1")]
+    ISS,
+}
+
+#[derive(Debug, DekuRead, DekuWrite)]
+#[deku(type = "u32")]
+enum TdfEventsFormat {
+    #[deku(id = "0")]
+    Unknown,
+    #[deku(id = "1")]
+    STD,
+}
+
+#[derive(Debug, DekuRead, DekuWrite)]
+#[deku(type = "u32")]
+enum TdfForce3DFormat {
+    #[deku(id = "0")]
+    Unknown,
+    #[deku(id = "1")]
+    ByTrack,
+    #[deku(id = "2")]
+    ByFrame,
+    #[deku(id = "3")]
+    ByTrackWithSpeed,
+    #[deku(id = "4")]
+    ByFrameWithSpeed,
+}
+
+#[derive(Debug, DekuRead, DekuWrite)]
+#[deku(type = "u32")]
+enum TdfDataPlatFormat {
+    #[deku(id = "0")]
+    Unknown,
+    #[deku(id = "1")]
+    ByTrackSingle,
+    #[deku(id = "2")]
+    ByFrameSingle,
+    #[deku(id = "3")]
+    ByTrackSingleWithLabels,
+    #[deku(id = "4")]
+    ByFrameSingleWithLabels,
+    #[deku(id = "5")]
+    ByTrackDouble,
+    #[deku(id = "6")]
+    ByFrameDouble,
+    #[deku(id = "7")]
+    ByTrackDoubleWithLabels,
+    #[deku(id = "8")]
+    ByFrameDoubleWithLabels,
+    #[deku(id = "9")]
+    ByTrackSingleWithSpeed,
+    #[deku(id = "10")]
+    ByFrameSingleWithSpeed,
+    #[deku(id = "11")]
+    ByTrackSingleWithSpeedWithLabels,
+    #[deku(id = "12")]
+    ByFrameSingleWithSpeedWithLabels,
+    #[deku(id = "13")]
+    ByTrackDoubleWithSpeed,
+    #[deku(id = "14")]
+    ByFrameDoubleWithSpeed,
+    #[deku(id = "15")]
+    ByTrackDoubleWithSpeedWithLabels,
+    #[deku(id = "16")]
+    ByFrameDoubleWithSpeedWithLabels,
 }
